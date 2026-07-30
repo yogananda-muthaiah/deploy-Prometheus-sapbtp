@@ -1,0 +1,19 @@
+applications:
+  - name: prometheus-test
+    memory: 1G
+    disk_quota: 2G
+    docker:
+      image: prom/prometheus:latest
+    command: |
+      sh -c 'cat > /etc/prometheus/prometheus.yml <<EOF
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: "flask-app"
+          static_configs:
+            - targets: ["<app>.cfapps.eu10.hana.ondemand.com"]
+          metrics_path: "/metrics"
+          scheme: https
+      EOF
+      /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles'
